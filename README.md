@@ -10,7 +10,6 @@ Parse this README.md file into a struct.
 package main
 
 import (
-	_ "embed"
 	"fmt"
 
 	"github.com/cugu/md"

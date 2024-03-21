@@ -1,7 +1,6 @@
 package md_test
 
 import (
-	_ "embed"
 	"fmt"
 
 	"github.com/cugu/md"
