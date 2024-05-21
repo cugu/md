@@ -2,9 +2,17 @@
 
 Parse markdown into Go structs, similar to encoding/json.
 
+Supports parsing markdown into structs with the following fields:
+
+- `heading`: A Markdown heading (e.g. `# Title`).
+- `paragraph`: A Markdown paragraph (e.g. `A short description.`).
+- `blockquote`: A Markdown blockquote (e.g. `> A blockquote.`).
+- `thematic_break`: A Markdown thematic break (e.g. `---`).
+- `code_block`: A Markdown code block (e.g. ```` ```go\nfunc main() {}``` ````).
+
 ## Example
 
-Parse this README.md file into a struct.
+Parse a markdown file into a struct.
 
 ```go
 package main
@@ -16,22 +24,27 @@ import (
 )
 
 type Text struct {
-	Title           string `md:"heading"`
-	Description     string `md:"paragraph"`
-	OptionalTitle   string `md:"heading,omitempty"`
-	mainDescription string `md:"paragraph,omitempty"`
+	Title       string `md:"heading"`
+	Description string `md:"paragraph"`
 }
 
-func main() {
-	markdown := []byte("# Title\n\nA short description.")
+const example = `
+# Title
 
+A short description.
+`
+
+func main() {
 	var text Text
-	if err := md.Unmarshal(markdown, &text); err != nil {
+	if err := md.Unmarshal([]byte(example), &text); err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	fmt.Println(text.Title)
 	fmt.Println(text.Description)
-	// Output: A short description.
+	// Output:
+	// Title
+	// A short description.
 }
 ```

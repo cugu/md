@@ -31,8 +31,7 @@ jobs:
           make fmt
 
       - name: Check
-        run: |
-          git diff --exit-code
+        run: git diff --exit-code
 
   test:
     name: Test
