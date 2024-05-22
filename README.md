@@ -1,5 +1,8 @@
 # md
 
+[![Go Reference](https://pkg.go.dev/badge/image)](https://pkg.go.dev/github.com/cugu/md)
+[![Go Coverage](https://github.com/cugu/md/wiki/coverage.svg)](https://raw.githack.com/wiki/cugu/md/coverage.html)
+
 Parse markdown into Go structs, similar to encoding/json.
 
 Supports parsing markdown into structs with the following fields:
