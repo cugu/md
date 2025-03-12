@@ -63,14 +63,12 @@ func (d *decoder) assignBlockContentToField(fieldIndex int, src reflect.Type, bl
 		return fieldIndex + 1, block.NextSibling(), nil
 	}
 
-	element := block.Kind()
-
-	tagName, ok := elementMap[element]
+	tagName, ok := tagName(block)
 
 	// if the field is tagged but the element is not supported
 	if !ok {
 		if d.config.disallowUnknownFields {
-			return 0, nil, fmt.Errorf("unexpected element: %s", element.String())
+			return 0, nil, fmt.Errorf("unexpected element: %s", block.Kind().String())
 		}
 
 		return fieldIndex, block.NextSibling(), nil
@@ -93,11 +91,10 @@ func (d *decoder) handleExtraMarkdownBlocks(block ast.Node) error {
 	var extraBlocks []string
 
 	for ; block != nil; block = block.NextSibling() {
-		element := block.Kind()
-		tagName, ok := elementMap[element]
+		tagName, ok := tagName(block)
 		if !ok {
 			if d.config.disallowUnknownFields {
-				return fmt.Errorf("unexpected element: %s", element.String())
+				return fmt.Errorf("unexpected element: %s", block.Kind().String())
 			}
 
 			continue

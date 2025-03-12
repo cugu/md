@@ -7,7 +7,7 @@ import (
 )
 
 type Text struct {
-	Title       string `md:"heading"`
+	Title       string `md:"heading1"`
 	Description string `md:"paragraph"`
 }
 
@@ -32,7 +32,7 @@ func ExampleUnmarshal() {
 }
 
 type ExtendedText struct {
-	Title       string `md:"heading"`
+	Title       string `md:"heading1"`
 	Quote       string `md:"blockquote"`
 	Description string `md:"paragraph"`
 	Break       string `md:"thematic_break"`
@@ -62,7 +62,7 @@ func ExampleUnmarshal_extended() {
 }
 
 type OmitemptyText struct {
-	Title       string `md:"heading"`
+	Title       string `md:"heading1"`
 	Quote       string `md:"blockquote,omitempty"`
 	Description string `md:"paragraph"`
 }

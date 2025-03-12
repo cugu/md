@@ -21,3 +21,10 @@ lint:
 test:
 	@echo "Testing..."
 	go test -v ./...
+
+.PHONY: coverage
+coverage:
+	@echo "Testing with coverage..."
+	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out
+	@echo "Done."

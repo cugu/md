@@ -4,6 +4,7 @@ package md
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/yuin/goldmark/ast"
@@ -11,12 +12,21 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-var elementMap = map[ast.NodeKind]string{
-	ast.KindBlockquote:      "blockquote",
-	ast.KindFencedCodeBlock: "code_block",
-	ast.KindHeading:         "heading",
-	ast.KindParagraph:       "paragraph",
-	ast.KindThematicBreak:   "thematic_break",
+func tagName(node ast.Node) (string, bool) {
+	switch n := node.(type) {
+	case *ast.Blockquote:
+		return "blockquote", true
+	case *ast.FencedCodeBlock:
+		return "code_block", true
+	case *ast.Heading:
+		return "heading" + strconv.Itoa(n.Level), true
+	case *ast.Paragraph:
+		return "paragraph", true
+	case *ast.ThematicBreak:
+		return "thematic_break", true
+	default:
+		return "", false
+	}
 }
 
 func handleAdditionalFields(fieldIndex int, dst reflect.Value, src reflect.Type) error {
