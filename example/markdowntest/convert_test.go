@@ -19,11 +19,11 @@ import (
 var TestFiles embed.FS
 
 type TestCase struct {
-	Title           string `md:"heading"`
+	Title           string `md:"heading1"`
 	Description     string `md:"paragraph"`
-	MarkdownHeading string `md:"heading"`
+	MarkdownHeading string `md:"heading2"`
 	MarkdownText    string `md:"code_block"`
-	HTMLHeading     string `md:"heading"`
+	HTMLHeading     string `md:"heading2"`
 	HTMLText        string `md:"code_block"`
 }
 

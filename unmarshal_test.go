@@ -10,27 +10,22 @@ import (
 	"github.com/cugu/md"
 )
 
-type Test interface {
-	Name() string
-	Run(t *testing.T)
-}
-
-type TestCase[T any] struct {
+type UnmarshalTestCase[T any] struct {
 	name    string
-	args    TestArgs[T]
+	args    UnmarshalTestArgs[T]
 	want    T
 	wantErr error
 }
 
-func (tc TestCase[T]) Name() string {
+func (tc UnmarshalTestCase[T]) Name() string {
 	return tc.name
 }
 
-func (tc TestCase[T]) Run(t *testing.T) {
-	runTest(t, tc.args.md, tc.args.v, tc.args.options, tc.want, tc.wantErr)
+func (tc UnmarshalTestCase[T]) Run(t *testing.T) {
+	runUnmarshalTest(t, tc.args.md, tc.args.v, tc.args.options, tc.want, tc.wantErr)
 }
 
-func runTest(t *testing.T, markdown string, v any, options []md.Option, want any, wantErr error) {
+func runUnmarshalTest(t *testing.T, markdown string, v any, options []md.Option, want any, wantErr error) {
 	err := md.Unmarshal([]byte(markdown), v, options...)
 
 	if !reflect.DeepEqual(err, wantErr) {
@@ -42,23 +37,23 @@ func runTest(t *testing.T, markdown string, v any, options []md.Option, want any
 	}
 }
 
-type TestArgs[T any] struct {
+type UnmarshalTestArgs[T any] struct {
 	md      string
 	v       T
 	options []md.Option
 }
 
 func TestUnmarshalNil(t *testing.T) {
-	runTest(t, "test", nil, nil, nil, errors.New("v must be a non-nil pointer"))
+	runUnmarshalTest(t, "test", nil, nil, nil, errors.New("v must be a non-nil pointer"))
 }
 
 func TestUnmarshal(t *testing.T) {
 	type OnlyTitle struct {
-		Title string `md:"heading"`
+		Title string `md:"heading1"`
 	}
 
 	type TitleAndDescription struct {
-		Title       string `md:"heading"`
+		Title       string `md:"heading1"`
 		Description string `md:"paragraph"`
 	}
 
@@ -69,67 +64,67 @@ func TestUnmarshal(t *testing.T) {
 	type MissingFields struct{}
 
 	type OptionalTitle struct {
-		Title string `md:"heading,omitempty"`
+		Title string `md:"heading1,omitempty"`
 	}
 
 	tests := []Test{
-		TestCase[*OnlyTitle]{
+		UnmarshalTestCase[*OnlyTitle]{
 			name:    "use custom parser",
-			args:    TestArgs[*OnlyTitle]{"# Title", &OnlyTitle{}, []md.Option{md.WithParser(goldmark.DefaultParser())}},
+			args:    UnmarshalTestArgs[*OnlyTitle]{"# Title", &OnlyTitle{}, []md.Option{md.WithParser(goldmark.DefaultParser())}},
 			want:    &OnlyTitle{Title: "Title"},
 			wantErr: nil,
 		},
-		TestCase[*TitleAndDescription]{
+		UnmarshalTestCase[*TitleAndDescription]{
 			name:    "disallow unknown fields",
-			args:    TestArgs[*TitleAndDescription]{"\n# Title\n\n- A list item.\n\nA short description.\n", &TitleAndDescription{}, []md.Option{md.WithDisallowUnknownFields()}},
+			args:    UnmarshalTestArgs[*TitleAndDescription]{"\n# Title\n\n- A list item.\n\nA short description.\n", &TitleAndDescription{}, []md.Option{md.WithDisallowUnknownFields()}},
 			want:    &TitleAndDescription{Title: "Title"},
 			wantErr: errors.New("unexpected element: List"),
 		},
-		TestCase[*TitleAndDescription]{
+		UnmarshalTestCase[*TitleAndDescription]{
 			name:    "allow unknown fields",
-			args:    TestArgs[*TitleAndDescription]{"\n# Title\n\n- A list item.\n\nA short description.\n", &TitleAndDescription{}, nil},
+			args:    UnmarshalTestArgs[*TitleAndDescription]{"\n# Title\n\n- A list item.\n\nA short description.\n", &TitleAndDescription{}, nil},
 			want:    &TitleAndDescription{Title: "Title", Description: "A short description."},
 			wantErr: nil,
 		},
-		TestCase[*UntaggedTitle]{
+		UnmarshalTestCase[*UntaggedTitle]{
 			name:    "untagged struct",
-			args:    TestArgs[*UntaggedTitle]{"# Title", &UntaggedTitle{}, nil},
+			args:    UnmarshalTestArgs[*UntaggedTitle]{"# Title", &UntaggedTitle{}, nil},
 			want:    &UntaggedTitle{},
 			wantErr: nil,
 		},
-		TestCase[*OnlyTitle]{
+		UnmarshalTestCase[*OnlyTitle]{
 			name:    "mismatch between field and markdown block element",
-			args:    TestArgs[*OnlyTitle]{"A short description.", &OnlyTitle{}, nil},
+			args:    UnmarshalTestArgs[*OnlyTitle]{"A short description.", &OnlyTitle{}, nil},
 			want:    &OnlyTitle{},
 			wantErr: errors.New("unexpected paragraph: A short description."),
 		},
-		TestCase[*MissingFields]{
+		UnmarshalTestCase[*MissingFields]{
 			name:    "more markdown blocks than fields",
-			args:    TestArgs[*MissingFields]{"# Title", &MissingFields{}, nil},
+			args:    UnmarshalTestArgs[*MissingFields]{"# Title", &MissingFields{}, nil},
 			want:    &MissingFields{},
-			wantErr: errors.New("extra blocks: heading"),
+			wantErr: errors.New("extra blocks: heading1"),
 		},
-		TestCase[*OnlyTitle]{
+		UnmarshalTestCase[*OnlyTitle]{
 			name:    "more fields than blocks",
-			args:    TestArgs[*OnlyTitle]{"", &OnlyTitle{}, nil},
+			args:    UnmarshalTestArgs[*OnlyTitle]{"", &OnlyTitle{}, nil},
 			want:    &OnlyTitle{},
-			wantErr: errors.New("missing heading"),
+			wantErr: errors.New("missing heading1"),
 		},
-		TestCase[*OptionalTitle]{
+		UnmarshalTestCase[*OptionalTitle]{
 			name:    "more fields than blocks, but omitempty tag set",
-			args:    TestArgs[*OptionalTitle]{"", &OptionalTitle{}, nil},
+			args:    UnmarshalTestArgs[*OptionalTitle]{"", &OptionalTitle{}, nil},
 			want:    &OptionalTitle{},
 			wantErr: nil,
 		},
-		TestCase[*OnlyTitle]{
+		UnmarshalTestCase[*OnlyTitle]{
 			name:    "more markdown blocks than fields, and disallow unknown fields",
-			args:    TestArgs[*OnlyTitle]{"\n# Title\n\n- A list item.\n", &OnlyTitle{}, []md.Option{md.WithDisallowUnknownFields()}},
+			args:    UnmarshalTestArgs[*OnlyTitle]{"\n# Title\n\n- A list item.\n", &OnlyTitle{}, []md.Option{md.WithDisallowUnknownFields()}},
 			want:    &OnlyTitle{Title: "Title"},
 			wantErr: errors.New("unexpected element: List"),
 		},
-		TestCase[*OnlyTitle]{
+		UnmarshalTestCase[*OnlyTitle]{
 			name:    "more fields than blocks, and allow unknown fields",
-			args:    TestArgs[*OnlyTitle]{"\n# Title\n\n- A list item.\n", &OnlyTitle{}, nil},
+			args:    UnmarshalTestArgs[*OnlyTitle]{"\n# Title\n\n- A list item.\n", &OnlyTitle{}, nil},
 			want:    &OnlyTitle{Title: "Title"},
 			wantErr: nil,
 		},
