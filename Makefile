@@ -7,8 +7,8 @@ install-dev:
 .PHONY: fmt
 fmt:
 	@echo "Formatting..."
-	gci write -s standard -s default -s "prefix(github.com/cugu/md)" .
-	gofumpt -l -w .
+	$(shell go env GOPATH)/bin/gci write -s standard -s default -s "prefix(github.com/cugu/md)" .
+	$(shell go env GOPATH)/bin/gofumpt -l -w .
 	@echo "Done."
 
 .PHONY: lint
