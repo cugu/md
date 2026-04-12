@@ -45,23 +45,23 @@ func (e *encoder) marshal(v any) ([]byte, error) {
 
 		switch tag {
 		case "blockquote":
-			buf.WriteString(fmt.Sprintf("> %s\n\n", field.String()))
+			fmt.Fprintf(&buf, "> %s\n\n", field.String())
 		case "code_block":
-			buf.WriteString(fmt.Sprintf("```\n%s\n```\n\n", field.String()))
+			fmt.Fprintf(&buf, "```\n%s\n```\n\n", field.String())
 		case "heading1":
-			buf.WriteString(fmt.Sprintf("# %s\n\n", field.String()))
+			fmt.Fprintf(&buf, "# %s\n\n", field.String())
 		case "heading2":
-			buf.WriteString(fmt.Sprintf("## %s\n\n", field.String()))
+			fmt.Fprintf(&buf, "## %s\n\n", field.String())
 		case "heading3":
-			buf.WriteString(fmt.Sprintf("### %s\n\n", field.String()))
+			fmt.Fprintf(&buf, "### %s\n\n", field.String())
 		case "heading4":
-			buf.WriteString(fmt.Sprintf("#### %s\n\n", field.String()))
+			fmt.Fprintf(&buf, "#### %s\n\n", field.String())
 		case "heading5":
-			buf.WriteString(fmt.Sprintf("##### %s\n\n", field.String()))
+			fmt.Fprintf(&buf, "##### %s\n\n", field.String())
 		case "heading6":
-			buf.WriteString(fmt.Sprintf("###### %s\n\n", field.String()))
+			fmt.Fprintf(&buf, "###### %s\n\n", field.String())
 		case "paragraph":
-			buf.WriteString(fmt.Sprintf("%s\n\n", field.String()))
+			fmt.Fprintf(&buf, "%s\n\n", field.String())
 		case "thematic_break":
 			buf.WriteString("---\n\n")
 		default:
