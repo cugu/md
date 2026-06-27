@@ -1,7 +1,7 @@
 .PHONY: install-dev
 install-dev:
 	@echo "Installing..."
-	go install mvdan.cc/gofumpt@latest
+	go install mvdan.cc/gofumpt@v0.9.2
 	go install github.com/daixiang0/gci@latest
 
 .PHONY: fmt
